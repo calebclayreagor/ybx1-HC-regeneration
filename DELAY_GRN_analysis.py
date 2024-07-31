@@ -130,7 +130,7 @@ plt.show()
 
 # %%
 # # download enhancer sequences (GRCz11) -> fragment (in silico)
-# _2bit_, frg_sz = '/mnt/c/Users/../Documents/twoBitToFa', 100
+# _2bit_, frg_sz = '.../twoBitToFa', 100
 # dr11_url = 'https://hgdownload.soe.ucsc.edu/goldenPath/danRer11/bigZips/danRer11.2bit'
 # enh_df = pd.read_csv('motifs/EnhancerRegions50kb.csv')
 # for ix in enh_df.index:
@@ -186,7 +186,7 @@ plt.show()
 # %%
 # Motif enrichment near TSS: ybx1 targets vs. others
 n_bins, w_sm, xlim, w_enh = 10000, 50, [-400, 900], 50000
-fimo = pd.read_csv('motifs/ybx1_targets/fimo/fimo-1e-1.tsv', sep = '\t', skipfooter = 3)
+fimo = pd.read_csv('fimo.tsv', sep = '\t', skipfooter = 3)
 fimo[['chr', 'seq_start', 'seq_end', 'gene']] = fimo['sequence_name'].str.split('_', n = 3, expand = True)
 fimo = fimo.loc[~(fimo.isnull().any(axis = 1))]  # removes alt chromosomes
 fimo[['seq_start', 'seq_end']] = fimo[['seq_start', 'seq_end']].astype(int)
@@ -233,38 +233,3 @@ plt.show()
 # # n_motifs_genes
 # # list(n_motifs_genes.index)
 # fimo_tss.loc[fimo_tss['gene'] == 'atoh1a', :]
-
-#%%
-# # Regulon venn diagram: ybx1 vs. her4 (= her4.1 + her4.2.1)
-# ybx1_regulon = set(pred_grn.index[pred_grn.loc['ybx1'].astype(bool)])
-# her4_regulon = set(pred_grn.index[pred_grn.loc[['her4.1', 'her4.2.1']].max(0).astype(bool)])
-# fig, ax = plt.subplots(1, 1, figsize = (2.75, 2.75))
-# venn2([ybx1_regulon, her4_regulon], ('', ''), ('magenta', 'cyan'), alpha = 1)
-# # plt.savefig('figures/figure-1/ybx1-her4-venn.pdf', bbox_inches = 'tight', dpi = 600)
-# plt.show()
-
-# # Regulon similarities: ybx1, fos, her4
-# genes = ['ybx1', 'fos', 'her4']   # fos = fosab, fosl1a;  her4 = her4.1, her4.2.1
-# pred_grn_genes = pred_grn.loc[[genes[0], f'{genes[1]}ab', f'{genes[2]}.1']].values
-# pred_grn_genes[1, :] = np.maximum(pred_grn_genes[1, :], pred_grn.loc[f'{genes[1]}l1a'].values)  # OR
-# pred_grn_genes[2, :] = np.maximum(pred_grn_genes[2, :], pred_grn.loc[f'{genes[2]}.2.1'].values) #
-# J = 1 - pairwise_distances(pred_grn_genes.astype(bool), metric = 'jaccard')
-# np.fill_diagonal(J, 0)
-# J = pd.DataFrame(J, index = genes, columns = genes)
-# G = nx.from_pandas_adjacency(J)
-# pos = nx.spectral_layout(G)
-# elabel = {e : round(G.edges[e]['weight'], 2) for e in  nx.edges(G)}
-
-# ns, lw, fs1, fs2, m = 800, 3, 10, 10.33, .2
-# fig, ax = plt.subplots(1, 1, figsize = (2, 2))
-# e = nx.draw_networkx_edges(G, pos, width = lw, edge_color = 'w')
-# nx.draw_networkx_nodes(G, pos, node_shape = '$\u25AC$', node_size = ns, node_color = 'w')
-# nx.draw_networkx_labels(G, pos, font_color = 'k', font_size = fs1)
-# nx.draw_networkx_edge_labels(G, pos, elabel, font_color = 'w', bbox = {'fc' : 'k'})
-# ax.text(0, 0, r'$J$', size = fs2, ha = 'center', c = 'w')
-# ax.set_facecolor('k')
-# ax.set_xmargin(m)
-# ax.set_ymargin(m)
-# ax.set_box_aspect(1)
-# plt.savefig('figures/figure-1/ybx1-jaccard.pdf', bbox_inches = 'tight', dpi = 600)
-# plt.show()   
